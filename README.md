@@ -25,7 +25,7 @@ Video Downloader is a Python script that provides a user-friendly interface for 
 
 1. Clone this repository:
    ```
-   https://github.com/scrxtch666/VideoDownloader.git
+   https://github.com/scrxtch666/VIDEO_downloader.git
    ```
 
 2. Install the required dependencies:
