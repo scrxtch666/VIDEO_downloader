@@ -2,63 +2,84 @@ import yt_dlp
 import argparse
 import os
 import sys
+from colorama import Fore, Style, init
+from tabulate import tabulate
+from rich.text import Text
+from rich.console import Console
+
+
+init(autoreset=True)
+console = Console()
+
+def format_duration(seconds):
+   
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{minutes} min {seconds} sec"
 
 def download_video(url, output_dir='.', format_quality='best'):
-    """
-    Download video from given URL in single format (no merging required).
-    
-    Args:
-        url (str): URL of the video to download
-        output_dir (str): Directory to save the downloaded video
-        format_quality (str): Quality setting (default to best single format)
-    """
-    # Create output directory if it doesn't exist
-    output_dir = os.path.expanduser(output_dir)  # Expand ~ to user directory
+ 
+   
+    output_dir = os.path.expanduser(output_dir) 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
-    # Configuration options
+
+   
     ydl_opts = {
-        'format': format_quality,  # Using 'best' to get the best single format
+        'format': format_quality,
         'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
         'noplaylist': True,
-        'quiet': False,
-        'no_warnings': False,
+        'quiet': True,
+        'no_warnings': True,
         'ignoreerrors': False,
-        'verbose': False,  # Less verbose output
+        'verbose': False,
     }
+
     
-    print(f"Downloading video from: {url}")
-    print(f"Saving to directory: {output_dir}")
-    print(f"Quality setting: {format_quality}")
-    
+    console.print("=" * 60, style="cyan")
+    console.print("📥  [bold cyan]Downloading video from:[/bold cyan]")
+    console.print(f"🎬  URL: [yellow]{url}[/yellow]")
+    console.print(f"📁  Directory: [yellow]{output_dir}[/yellow]")
+    console.print("-" * 60, style="magenta")
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             if info:
-                print(f"Video found: {info.get('title', 'Unknown Title')}")
-                print(f"Duration: {info.get('duration', 'Unknown')} seconds")
+                video_title = info.get('title', 'Unknown Title')
+                video_duration = format_duration(info.get('duration', 0))
+
                 
-                # Download the video
+                console.print(f"🎥  Video found: [bold white]{video_title}[/bold white]")
+                console.print(f"⏳  Duration: [green]{video_duration}[/green]")
+
+                console.print("=" * 60, style="cyan")
+
+               
                 ydl.download([url])
-                
-                # Verify download was successful
+
+               
                 downloaded_files = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
                 if downloaded_files:
-                    print("\n✅ | Download completed successfully!")
-                    print(f"Files in {output_dir}:")
+                    console.print("\n✅  [bold green]Download completed successfully![/bold green]")
+                    console.print(f"📂 Files in [yellow]{output_dir}[/yellow]:\n")
+
+                    table_data = []
                     for file in downloaded_files:
                         file_path = os.path.join(output_dir, file)
                         size_mb = os.path.getsize(file_path) / (1024 * 1024)
-                        print(f" - {file} ({size_mb:.2f} MB)")
+                        table_data.append([file, f"{size_mb:.2f} MB"])
+
+                    
+                    console.print(tabulate(table_data, headers=["File Name", "Size"], tablefmt="grid"))
                 else:
-                    print("\n⚠️ | Warning: No files found in output directory after download.")
+                    console.print("\n⚠️  [bold yellow]Warning: No files found in the output directory after download.[/bold yellow]")
             else:
-                print("❌ | Error: Could not extract video information.")
+                console.print("❌  [bold red]Error: Could not extract video information.[/bold red]")
     except Exception as e:
-        print(f"❌ | Error downloading video: {e}")
+        console.print(f"❌  [bold red]Error downloading video: {e}[/bold red]")
         return 1
-    
+
     return 0
 
 def main():
@@ -67,7 +88,7 @@ def main():
     parser.add_argument('--output', '-o', default='.', help='Output directory')
     parser.add_argument('--quality', '-q', default='best', 
                         help='Video quality (default: best)')
-    
+
     args = parser.parse_args()
     sys.exit(download_video(args.url, args.output, args.quality))
 
