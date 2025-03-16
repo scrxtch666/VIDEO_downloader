@@ -45,18 +45,18 @@ def download_video(url, output_dir='.', format_quality='best'):
                 # Verify download was successful
                 downloaded_files = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
                 if downloaded_files:
-                    print("\nDownload completed successfully!")
+                    print("\n✅ | Download completed successfully!")
                     print(f"Files in {output_dir}:")
                     for file in downloaded_files:
                         file_path = os.path.join(output_dir, file)
                         size_mb = os.path.getsize(file_path) / (1024 * 1024)
                         print(f" - {file} ({size_mb:.2f} MB)")
                 else:
-                    print("\nWarning: No files found in output directory after download.")
+                    print("\n⚠️ | Warning: No files found in output directory after download.")
             else:
-                print("Error: Could not extract video information.")
+                print("❌ | Error: Could not extract video information.")
     except Exception as e:
-        print(f"Error downloading video: {e}")
+        print(f"❌ | Error downloading video: {e}")
         return 1
     
     return 0
