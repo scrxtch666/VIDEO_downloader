@@ -40,6 +40,12 @@ Basic usage:
 python video_downloader.py URL [--output OUTPUT_DIR] [--quality QUALITY]
 ```
 
+### Example
+
+```
+python video_downloader.py {link} --output D:\VIDEO_downloader\Download 
+```
+
 ### Parameters
 
 - `URL` - The URL of the video you want to download (required)

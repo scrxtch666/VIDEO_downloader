@@ -7,6 +7,7 @@ from tabulate import tabulate
 from rich.text import Text
 from rich.console import Console
 
+# VIDEO DOWNLOADER V2 by @scrxtch & Claude.ai
 
 init(autoreset=True)
 console = Console()

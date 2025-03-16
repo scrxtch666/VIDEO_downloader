@@ -1,1 +1,0 @@
- python video_downloader.py {link} --output D:\VIDEO_downloader\Download 
